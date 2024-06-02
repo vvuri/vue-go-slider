@@ -10,4 +10,6 @@ Steps
 7. $ go get github.com/lpernett/godotenv
 - Env: https://pkg.go.dev/github.com/lpernett/godotenv#section-readme
 - Add file .env file
-8. 
+8. MongoDB
+- https://console.clever-cloud.com/
+- 
