@@ -11,5 +11,13 @@ Steps
 - Env: https://pkg.go.dev/github.com/lpernett/godotenv#section-readme
 - Add file .env file
 8. MongoDB
-- https://restdb.io/account/databases/vvuri-14a5/api
-- 
+- $ go get go.mongodb.org/mongo-driver/mongo
+- https://www.mongodb.com/try/download/community-kubernetes-operator
+- download msi 7.0.11 and install -> c:/ext/...
+- MongoDB Shell 2.2.6 - download and install - no need install
+- Compass - New database: vue-go-slider. collection: slides
+- Connection string:   mongodb://localhost:27017/
+- add Shell to path
+9. Remove env from git
+- gitignore .env
+- git rm .env --cached

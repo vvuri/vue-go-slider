@@ -1,19 +1,24 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/lpernett/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 	"os"
 )
 
 type Slide struct {
-	ID     int    `json:"id"`
+	ID     int    `json:"id" bson:"_id"`
 	Public bool   `json:"public"`
 	Title  string `json:"title"`
 	Body   string `json:"body"`
 }
+
+var collection *mongo.Collection
 
 func main() {
 	err := godotenv.Load(".env")
@@ -22,6 +27,18 @@ func main() {
 	}
 
 	PORT := os.Getenv("PORT")
+	MONGODB_URI := os.Getenv("MONGODB_URI")
+
+	clientOptions := options.Client().ApplyURI(MONGODB_URI)
+	client, err := mongo.Connect(context.Background(), clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.Ping(context.Background(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	log.Println("Server started on :" + PORT)
 	app := fiber.New()
