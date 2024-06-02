@@ -5,6 +5,7 @@ import (
 	fiber "github.com/gofiber/fiber/v2"
 	"github.com/lpernett/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
@@ -12,10 +13,10 @@ import (
 )
 
 type Slide struct {
-	ID     int    `json:"id" bson:"_id"`
-	Public bool   `json:"public"`
-	Title  string `json:"title"`
-	Body   string `json:"body"`
+	ID     primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	Public bool               `json:"public"`
+	Title  string             `json:"title"`
+	Body   string             `json:"body"`
 }
 
 var collection *mongo.Collection
@@ -49,7 +50,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/api/slides", getSlides)
-	//app.Post("/api/slides", putSlides)
+	app.Post("/api/slides", createSlide)
 	//app.Patch("/api/slides/:id", updateSlides)
 	//app.Delete("/api/slides/:id", deleteSlides)
 
@@ -77,9 +78,8 @@ func getSlides(c *fiber.Ctx) error {
 	return c.Status(200).JSON(slides)
 }
 
-/*
-func putSlides(c *fiber.Ctx) error {
-	slide := &Slide{}
+func createSlide(c *fiber.Ctx) error {
+	slide := new(Slide)
 
 	if err := c.BodyParser(slide); err != nil {
 		return err
@@ -89,12 +89,17 @@ func putSlides(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Body is empty"})
 	}
 
-	slide.ID = len(slides) + 1
-	slides = append(slides, *slide)
+	insertResult, err := collection.InsertOne(context.Background(), slide)
+	if err != nil {
+		return err
+	}
+
+	slide.ID = insertResult.InsertedID.(primitive.ObjectID)
 
 	return c.Status(201).JSON(slide)
 }
 
+/*
 func updateSlides(c *fiber.Ctx) error {
 	id := c.Params("id")
 
